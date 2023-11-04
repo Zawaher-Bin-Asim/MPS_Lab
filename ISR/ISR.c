@@ -22,7 +22,7 @@
 #define GPIO_PORTF_DIR_R  			(*((volatile unsigned long *)0x40025400))
 #define GPIO_PORTF_DEN_R	  		(*((volatile unsigned long *)0x4002551C))
 
-#define GPIO_PORTF_PD_R				(*((volatile unsigned long *)0x40025514))
+#define GPIO_PORTF_PU_R				(*((volatile unsigned long *)0x40025510))
 
 #define GPIO_PORTF_IS_R				(*((volatile unsigned long *)0x40025404))
 #define GPIO_PORTF_IBE_R			(*((volatile unsigned long *)0x40025408))
@@ -72,7 +72,7 @@ void Init_INT_GPIO(void){
 	GPIO_PORTF_DEN_R |= ((INT_PF4) | 
 						(GPIO_PORTF_PIN123_EN));		// Enable digital I/O on PF4,PF3-PF1
 
-	GPIO_PORTF_PD_R |= INT_PF4;							// Enable weak pullup on PF4
+	GPIO_PORTF_PU_R |= INT_PF4;							// Enable weak pullup on PF4
 
 
 	/*------------------------------ INTERRUPT Configuration------------------------------- */
