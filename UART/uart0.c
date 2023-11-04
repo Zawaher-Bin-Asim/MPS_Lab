@@ -22,13 +22,13 @@
 #define 	GPIO_PORTA_DIR_R				(*((volatile unsigned long*)0x40004400))
 
 //Register definitions for UART0_ module
-#define 	UART0_CTL_R						(*((volatile unsigned long*)0x4000C030))
+#define 	UART0_CTL_R					(*((volatile unsigned long*)0x4000C030))
 #define  	UART0_IBRD_R					(*((volatile unsigned long*)0x4000C024))
 #define  	UART0_FBRD_R					(*((volatile unsigned long*)0x4000C028))
 #define 	UART0_LCRH_R					(*((volatile unsigned long*)0x4000C02C))
-#define 	UART0_CC_R						(*((volatile unsigned long*)0x4000CFC8))
-#define 	UART0_FR_R						(*((volatile unsigned long*)0x4000C018))
-#define 	UART0_DR_R						(*((volatile unsigned long*)0x4000C000))
+#define 	UART0_CC_R					(*((volatile unsigned long*)0x4000CFC8))
+#define 	UART0_FR_R					(*((volatile unsigned long*)0x4000C018))
+#define 	UART0_DR_R					(*((volatile unsigned long*)0x4000C000))
 
 //Macros
 #define 	UART_FR_TX_FF				0x20								//UART Transmit FIFO Full
@@ -44,25 +44,30 @@ void UARTRxString(char*bufPt, unsigned short max);
 void UARTInit(void)
 {
 	// Enable clock for UART0_ and GPIO PortA
-
+	SYSCTL_RCGC_UART_R  |= 0x01;
+	SYSCTL_RCGC_GPIO_R  |= 0x01;
 	
 	// Configure GPIO as UART (AFSEL,PCTL,DEN)
-
+	GPIO_PORT_A_AFSEL_R |= 0x03;
+	GPIO_PORTA_PCTL_R   |= 0x00000011;
+	GPIO_PORTA_DEN_R    |= 0x03:
+	GPIO_PORTA_DIR _R   |= 0x03:
 	
 	//Disable UART
-	
+	UART0_CTL_R |= 0x0300;
 	
 	//Select system clock/PIOSC as UART Baud clock
-	
+	UART0_CC_R  &= 0x0;
 	
 	//Set Baud Rate
-	
+	UART0_IBRD_R |= 0x0008;
+	UART0_FBRD_R |= 0x2C;
 	
 	//8bit word length,no parity bit,one stop bit,FIFOs enable
-	
+	UART0_LCRH_R |= 0x70;
 	
 	//Enable UART
-	
+	UART0_CTL_R  |= 0x0301;
 
 }
 
@@ -78,7 +83,18 @@ adds them to a string.It echoes each character as it
 is inputted.*/
 void UARTRxString (char *pt, unsigned short max)
 {
-	
+	int length=0;
+    	char character;
+
+    	character = UARTRx();
+    	if(length<max)
+    	{
+     	   *pt=character;
+     	   pt++;
+      	  length++;
+      	  UARTTx(character+1);
+   	}
+    	*pt=0;
 }
 
 //Output 8bit to serial port
@@ -92,7 +108,11 @@ void UARTTx(unsigned char data)
 //Output a character string to serial port
 void UARTTxString(char *pt)
 {
-	
+	while(*pt)
+    {
+        UARTTx(*pt);
+        pt++;
+    }
 }
 
 int main(void)
